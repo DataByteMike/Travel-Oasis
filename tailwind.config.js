@@ -7,8 +7,14 @@ module.exports = {
     fontFamily: {
       'alkatra': ['Roboto', 'sans-serif']
     },
-    extend: {},
+    extend: {
+      colors: {
+        'beige': '#DDD0C8'
+      }
+    },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ],
 }
 
