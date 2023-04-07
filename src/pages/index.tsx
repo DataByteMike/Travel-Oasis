@@ -16,7 +16,7 @@ export default function Home(props : InferGetStaticPropsType<typeof getStaticPro
   const [listing, setListing] = useState(props.listing);
 
   return (
-    <div>
+    <div className=''>
       <Header placeholder="" />
       <Hero />
       <main className='max-w-7xl mx-auto px-8 sm:px-16'>

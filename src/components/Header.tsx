@@ -2,8 +2,10 @@ import Image from 'next/image';
 import Head from "next/head";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from "react";
-import { GlobeAltIcon, UserCircleIcon, UserIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { forwardRef, useState } from "react";
+import { GlobeAltIcon, UserCircleIcon, UsersIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 type Props = {
   placeholder: string
@@ -12,16 +14,30 @@ type Props = {
 export default function Header({placeholder}: Props) {
   const [searchInput, setSearchInput] = useState("");
   const [numOfGuests, setNumOfGuests] = useState(1);
+  const [dateRange, setDateRange] = useState([new Date(), null]);
+  const [startDate, endDate] = dateRange;
   const router = useRouter();
 
+  // Handles the selection of dates
+  const handleSelect = (dates: [any, any]) => {
+    setDateRange(dates);
+  };
+
+  // Resets the inputs of every form
+  const resetInput = () => {
+    setSearchInput("");
+    setDateRange([new Date(), null]);
+    setNumOfGuests(1);
+  }
+  
   // Push data out to result page
   const search = async () => {
     await router.push({
       pathname: "/result",
       query: {
         location: searchInput,
-        checkIn: "",
-        checkOut: "",
+        checkIn: startDate?.toISOString().split('T')[0],
+        checkOut: endDate?.toISOString().split('T')[0],
         guest: numOfGuests
       }
     });
@@ -35,29 +51,60 @@ export default function Header({placeholder}: Props) {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Link className='relative flex items-center cursor-pointer my-auto' href="/">
-        <Image src='/travel-temple-website-favicon-color.svg' alt="logo" width={50} height={50} />
+      <Link className='flex items-center cursor-pointer my-auto' href="/">
+        <Image src='/travel-oasis-website-favicon-color.png' alt="logo" width={50} height={50} />
         <h1 className='hidden sm:inline-block self-center text-xl font-semibold whitespace-nowrap text-black'>Travel Oasis</h1>
       </Link>
-      <div className='flex-grow items-center border-2 md:shadow-sm rounded-full py-3'>
-        <input 
-          className='flex-grow pl-4 bg-transparent outline-none text-sm text-gray-600 placeholder-gray-400 w-[97%]' 
+      <div
+        className='flex flex-grow items-center border-2 border-gray-600 md:shadow-sm rounded-full py-3'>
+        <input
+          className='flex-grow pl-4 bg-transparent outline-none text-sm text-gray-600 placeholder-gray-600 w-[97%]' 
           placeholder={placeholder || "Where to..."}
           type="text" 
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
         />
+        <MagnifyingGlassIcon className='h-8 bg-yellow-700 inline-flex text-white rounded-full py-2 mr-1 cursor-pointer' />
       </div>
-      <div className='hidden md:flex items-center space-x-4 justify-end text-gray-500'>
+      <div className='hidden md:flex items-center space-x-4 justify-end text-gray-800'>
         <p className='hidden lg:inline cursor-pointer'>Want to be a Host?</p>
         <GlobeAltIcon className='h-6 cursor-pointer'/>
-        <div className='flex items-center space-x-2 border-2 p-2 rounded-full border-[#883D1A]'>
+        <div className='flex items-center space-x-2 border-2 p-2 rounded-full border-black'>
           <UserCircleIcon className='h-6' />
         </div>
       </div>
       {searchInput && (
-        <div>
-
+        <div className='table absolute top-[100%] left-0 h-[100%] w-[100%]'>
+          <div className='table-cell align-middle bg-beige w-[20%]'>
+            <div className='mx-auto w-[250px] md:w-[700px]'>
+              <div className='flex space-x-2'>
+                <h3 className='text-xl flex-grow font-semibold'>Date:</h3>
+                <DatePicker
+                  selectsRange={true}
+                  minDate={new Date()}
+                  startDate={startDate}
+                  endDate={endDate}
+                  onChange={handleSelect}
+                  withPortal
+                />
+              </div>
+              <div className='flex items-center border-b mb-4 mt-2'>
+                <h3 className='text-xl flex-grow font-semibold'>Number of Guest:</h3>
+                <UsersIcon className='h-5 pr-1' />
+                <input
+                  value={numOfGuests}
+                  onChange={(e) => setNumOfGuests(parseInt(e.target.value))}
+                  type='number'
+                  min={1}
+                  className='w-12 pl-2 text-lg outline-none text-red-400 bg-transparent'
+                />
+              </div>
+              <div className='flex mb-4 space-x-2'>
+                <button onClick={resetInput} className='flex-grow text-gray-500 border border-black rounded-lg hover:bg-slate-200'>Cancel</button>
+                <button onClick={search} className='flex-grow text-yellow-600 border border-black rounded-lg hover:text-yellow-900 hover:bg-yellow-600'>Search</button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </header>
