@@ -51,10 +51,10 @@ export default function Header({placeholder}: Props) {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Link className='flex items-center cursor-pointer my-auto' href="/">
+      <div className='flex items-center cursor-pointer my-auto' onClick={() => router.push("/")}>
         <Image src='/travel-oasis-website-favicon-color.png' alt="logo" width={50} height={50} />
         <h1 className='hidden sm:inline-block self-center text-xl font-semibold whitespace-nowrap text-black'>Travel Oasis</h1>
-      </Link>
+      </div>
       <div
         className='flex flex-grow items-center border-2 border-gray-600 md:shadow-sm rounded-full py-3'>
         <input

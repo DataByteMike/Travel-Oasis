@@ -14,7 +14,7 @@ export default function Hero({}: Props) {
       />
       <div className='absolute top-[30%] sm:top-[35%] md:top-[45%] lg:top-1/2  w-full text-center'>
         <p className='text-sm text-gray-200 sm:text-lg'>Feel Like Exploring? Let Us Help</p>
-        <Link href="https://www.airbnb.com" target="_blank">
+        <Link href="/">
           <button className='text-yellow-700 bg-beige px-10 py-4 shadow-sm rounded-full font-bold my-3 hover:shadow-xl active:scale-90 hover:text-yellow-900 transition duration-150'>
             Take Me Away
           </button>
