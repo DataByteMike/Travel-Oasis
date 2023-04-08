@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Header from '@/components/Header';
 import InfoCard from '@/components/InfoCard';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import Footer from '@/components/Footer';
 
 type bookingDetails = {
   location: string,
@@ -53,19 +54,21 @@ export default function Result({ listing } : InferGetServerSidePropsType<GetServ
     return rateString;
   };
 
+  console.log(searchResult);
+
   return (
-    <div className=''>
-      <Header placeholder={`${location} | ${checkIn} | ${guest} guests`} />
-      <main className='flex'>
+    <div className=' '>
+      <Header placeholder={`${location} | ${checkIn} - ${checkOut} | ${guest} guests`} />
+      <main className='flex mb-16'>
         <section className='flex-grow pt-14 px-3 sm:px-4 md:px-10 lg:px-20'>
-          <p className='text-xs px-1 sm:px-0'>{searchResult.length} Stays - for {guest} guests</p>
+          <p className='text-xs px-1 sm:px-0'>{searchResult?.length} Stays - for {guest} guests</p>
           <h1 className='text-3xl font-semibold mt-2 mb-6'>Stays in {location}</h1>
           <div className='hidden lg:inline-flex mb-5 space-x-3 text-gray-800 whitespace-nowrap'>
-            <button>Cancellation Flexibility</button>
-            <button>Type of Place</button>
-            <button>Price</button>
-            <button>Rooms and Beds</button>
-            <button>More filters</button>
+            <button className='button'>Cancellation Flexibility</button>
+            <button className='button'>Type of Place</button>
+            <button className='button'>Price</button>
+            <button className='button'>Rooms and Beds</button>
+            <button className='button'>More filters</button>
           </div>
           <div className='flex flex-col'>
             {searchResult?.map(({address, amenityIds, bathrooms, bedrooms, beds, cancelPolicy, city, 
@@ -76,9 +79,8 @@ export default function Result({ listing } : InferGetServerSidePropsType<GetServ
                   key={key}
                   img={images[0]}
                   location={city}
-                  address={address}
                   name={name}
-                  description={""}
+                  description={type}
                   rating={rateAvaiable(rating)}
                   price={price}
                   page={deeplink}
@@ -88,19 +90,21 @@ export default function Result({ listing } : InferGetServerSidePropsType<GetServ
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   )
 }
 
-export async function getServerSideProps(context: bookingDetails) {
+export async function getServerSideProps(context: any) {
   // Check to bypass env error
   const getEnv = (name: string | undefined) => {
     if (typeof name === 'undefined') {
-     throw new Error(`Variable ${name} undefined.`);
+      throw new Error(`Variable ${name} undefined.`);
     }
     return name;
   };
 
+  const { location, checkIn, checkOut, guest } = context.query;
   const options = {
     method: 'GET',
     headers: {
@@ -109,15 +113,15 @@ export async function getServerSideProps(context: bookingDetails) {
     }
   };
   
-  let url = `${getEnv(process.env.PROTECTED_URL)}location=${context.location}s&checkin=`;
-  url += `${context.checkIn}&checkout=${context.checkOut}&adults=${context.guest}&children=0&infants=0&pets=0&page=1&currency=USD`;
+  let url = `${getEnv(process.env.PROTECTED_URL)}location=${location}s&checkin=`;
+  url += `${checkIn}&checkout=${checkOut}&adults=${guest}&children=0&infants=0&pets=0&page=1&currency=USD`;
 
   const response = await fetch(url, options);
-  const searchResults = await response.json();
+  const result = await response.json();
 
   return {
     props: {
-      listing: searchResults
+      listing: result
     }
   };
 };

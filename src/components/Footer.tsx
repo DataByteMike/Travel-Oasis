@@ -14,7 +14,7 @@ export default function Footer({}: Props) {
             &copy; Travel Oasis {new Date().getFullYear()}
           </li>
           <li className=''>
-            <Link href='https://github.com/DataByteMike'>
+            <Link href='https://github.com/DataByteMike' target='_blank'>
               GitHub
             </Link>
           </li>
