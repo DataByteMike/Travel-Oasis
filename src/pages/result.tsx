@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import InfoCard from '@/components/InfoCard';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
@@ -44,6 +44,9 @@ export default function Result({ listing } : InferGetServerSidePropsType<GetServ
   const router = useRouter();
   const { location, checkIn, checkOut, guest } = router.query;
   const [searchResult, setSearchResult] = useState(listing?.results);
+  const [cancellation, setCancellation] = useState("");
+  const [bed, setBeds] = useState("");
+  const [price, setPrice] = useState("");
 
   // Check if the passed string is not undefined
   const rateAvaiable = (rates: number | undefined) => {
@@ -54,7 +57,25 @@ export default function Result({ listing } : InferGetServerSidePropsType<GetServ
     return rateString;
   };
 
-  console.log(searchResult);
+  useEffect(() => {
+    if (price === "cheap") {
+      setSearchResult(
+        listing?.results.filter((item: any) => { return ( item.price.rate < 150) })
+      );
+    }
+
+    if (bed === "more_bed") {
+      setSearchResult(
+        listing?.results.filter((item: any) => { return (item.beds > 1)})
+      );
+    }
+
+    if (cancellation === "Flexibility") {
+      setSearchResult(
+        listing?.results.filter((item: any) => { return (item.cancelPolicy === "CANCEL_FLEXIBLE")})
+      );
+    }
+  }, [cancellation, bed, price]);
 
   return (
     <div className=' '>
@@ -64,11 +85,9 @@ export default function Result({ listing } : InferGetServerSidePropsType<GetServ
           <p className='text-xs px-1 sm:px-0'>{searchResult?.length} Stays - for {guest} guests</p>
           <h1 className='text-3xl font-semibold mt-2 mb-6'>Stays in {location}</h1>
           <div className='hidden lg:inline-flex mb-5 space-x-3 text-gray-800 whitespace-nowrap'>
-            <button className='button'>Cancellation Flexibility</button>
-            <button className='button'>Type of Place</button>
-            <button className='button'>Price</button>
-            <button className='button'>Rooms and Beds</button>
-            <button className='button'>More filters</button>
+            <button className='button' onClick={() => setCancellation("Flexibility")}>Cancellation Flexibility</button>
+            <button className='button' onClick={() => setPrice("cheap")}>Price</button>
+            <button className='button' onClick={() => setBeds("more_bed")}>Rooms and Beds</button>
           </div>
           <div className='flex flex-col'>
             {searchResult?.map(({address, amenityIds, bathrooms, bedrooms, beds, cancelPolicy, city, 
